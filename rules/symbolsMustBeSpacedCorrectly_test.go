@@ -26,7 +26,11 @@ func TestSymbolsMustBeSpacedCorrectly(t *testing.T) {
 	if (1+1==2) i-1+(i*3)/(i/1)
 	a&&!b
 	if!(true);
-	as IEnumerable<Namespace.ClassName>`)
+	as IEnumerable<Namespace.ClassName>
+	null??string.Empty;
+	(true)?true:false;
+	if (true
+		&& false)`)
 	expected := []byte(`/// <summary>
 	int i = 0;
 	if (i == 0) i += 2;
@@ -40,13 +44,17 @@ func TestSymbolsMustBeSpacedCorrectly(t *testing.T) {
 	/* <This is a comment>
 	 *
 	 */
-	for (var i = 1; i > -1; i-- ) {}
+	for (var i = 1; i > -1; i--) {}
 	if (i || i) --i;
 	if (i && i) i-- * 0;
 	if (1 + 1 == 2) i - 1 + (i * 3) / (i / 1)
 	a && !b
 	if !(true);
-	as IEnumerable<Namespace.ClassName>`)
+	as IEnumerable<Namespace.ClassName>
+	null ?? string.Empty;
+	(true) ? true : false;
+	if (true
+		&& false)`)
 
 	actual := applySymbolsMustBeSpacedCorrectly(input)
 	if !bytes.Equal(expected, actual) {

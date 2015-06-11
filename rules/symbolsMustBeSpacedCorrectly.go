@@ -35,8 +35,10 @@ func applySymbolsMustBeSpacedCorrectly(source []byte) []byte {
 
 		if !(short || long) {
 			// Look for pairings
-			re := regexp.MustCompile(`(\w?)([<>!\+\-\*\^%/\^=&\|]?[=\|&]|[<>])(\w?)`)
-			line = re.ReplaceAll(line, []byte("$1 $2 $3"))
+			re := regexp.MustCompile(`([\w\)])([<>!\+\-\*\^%/\^=&\|\?]?[=\|&\?]|[<>\?\:])`)
+			line = re.ReplaceAll(line, []byte("$1 $2"))
+			re = regexp.MustCompile(`([<>!\+\-\*\^%/\^=&\|\?]?[=\|&\?]|[<>\?\:])([\w!])`)
+			line = re.ReplaceAll(line, []byte("$1 $2"))
 
 			// Incrementors and decrementors
 			re = regexp.MustCompile(`([^\(])([\W])(\+\+|\-\-)(\w)`)
@@ -44,11 +46,23 @@ func applySymbolsMustBeSpacedCorrectly(source []byte) []byte {
 			re = regexp.MustCompile(`(\w)(\+\+|\-\-)([^\)])`)
 			line = re.ReplaceAll(line, []byte("$1$2 $3$4"))
 
-			// // Singlets
-			// re = regexp.MustCompile(`([\+\-\*/][^<>=\-\+\)]?)(\w)`)
-			// line = re.ReplaceAll(line, []byte("$1 $2"))
-			// re = regexp.MustCompile(`(\w)([\+\-\*/][^<>=\-\+\)]?)`)
-			// line = re.ReplaceAll(line, []byte("$1 $2"))
+			// Unary operators
+			re = regexp.MustCompile(`([\w])([!])([\w|\(])`)
+			line = re.ReplaceAll(line, []byte("$1 $2$3"))
+
+			// Singlets
+			re = regexp.MustCompile(`([\w\)])([\*/])`)
+			line = re.ReplaceAll(line, []byte("$1 $2"))
+			re = regexp.MustCompile(`([\*/])([\w\(])`)
+			line = re.ReplaceAll(line, []byte("$1 $2"))
+			re = regexp.MustCompile(`([^\+])([\+])([^\+=])`)
+			line = re.ReplaceAll(line, []byte("$1 $2 $3"))
+			re = regexp.MustCompile(`([^\-])([\-])([^\-=])`)
+			line = re.ReplaceAll(line, []byte("$1 $2 $3"))
+
+			// Fix negatives
+			re = regexp.MustCompile(`([\+=<>\?])([ ])([\-])([ ])([\d])`)
+			line = re.ReplaceAll(line, []byte("$1 $3$5"))
 
 			// Fix generics
 			re = regexp.MustCompile(`( < )(.*)( >\s*)`)
