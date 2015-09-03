@@ -61,7 +61,7 @@ func applySymbolsMustBeSpacedCorrectly(source []byte) []byte {
 			line = re.ReplaceAll(line, []byte("$1 $2 $3"))
 
 			// Fix negatives
-			re = regexp.MustCompile(`([\+=<>\?])([ ])([\-])([ ])([\d])`)
+			re = regexp.MustCompile(`([\+=<>\?])( *)([\-])([ ]+)([\d])`)
 			line = re.ReplaceAll(line, []byte("$1 $3$5"))
 
 			// Fix generics
