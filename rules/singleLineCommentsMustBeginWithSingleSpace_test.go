@@ -2,7 +2,6 @@ package rules
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 )
 
@@ -11,16 +10,17 @@ func TestSingleLineCommentsMustBeingWithSingleSpace(t *testing.T) {
 //  This is a comment with too many spaces
 ////int i = 0;
 //////int i = 0;
-////return i;`)
+////return i;
+//http://www.example.com`)
 	expected := []byte(`// This is a comment with no space
 // This is a comment with too many spaces
-////int i = 0;
-//////int i = 0;
-////return i;`)
+// // int i = 0;
+// // // int i = 0;
+// // return i;
+// http://www.example.com`)
 
 	actual := applySingleLineCommentsMustBeginWithSingleSpace(input)
 	if !bytes.Equal(expected, actual) {
-		fmt.Println(string(actual))
 		t.Fail()
 	}
 }

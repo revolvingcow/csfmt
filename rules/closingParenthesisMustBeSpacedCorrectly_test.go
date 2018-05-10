@@ -2,7 +2,6 @@ package rules
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 )
 
@@ -20,7 +19,6 @@ switch (foo) {}
 
 	actual := applyClosingParenthesisMustBeSpacedCorrectly(input)
 	if !bytes.Equal(expected, actual) {
-		fmt.Println(string(actual))
 		t.Fail()
 	}
 }

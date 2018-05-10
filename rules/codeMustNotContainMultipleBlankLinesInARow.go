@@ -10,7 +10,7 @@ var codeMustNotContainMultipleBlankLinesInARow = &Rule{
 }
 
 func applyCodeMustNotContainMultipleBlankLinesInARow(source []byte) []byte {
-	re := regexp.MustCompile("(\n\n)+")
+	re := regexp.MustCompile("\n{3,}")
 	for re.Match(source) {
 		source = re.ReplaceAllLiteral(source, []byte("\n"))
 	}

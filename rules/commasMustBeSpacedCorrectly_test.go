@@ -2,7 +2,6 @@ package rules
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 )
 
@@ -29,7 +28,6 @@ func TestCommasMustBeSpacedCorrectly(t *testing.T) {
 
 	actual := applyCommasMustBeSpacedCorrectly(input)
 	if !bytes.Equal(expected, actual) {
-		fmt.Println(string(actual))
 		t.Fail()
 	}
 }

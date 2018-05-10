@@ -2,7 +2,6 @@ package rules
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 )
 
@@ -20,7 +19,6 @@ func TestDocumentationLineMustBeginWithSingleSpace(t *testing.T) {
 
 	actual := applyDocumentationLinesMustBeginWithSingleSpace(input)
 	if !bytes.Equal(expected, actual) {
-		fmt.Println(string(actual))
 		t.Fail()
 	}
 }

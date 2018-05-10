@@ -2,7 +2,6 @@ package rules
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 )
 
@@ -24,7 +23,6 @@ new string[
 
 	actual := applyOpeningSquareBracketsMustBeSpacedCorrectly(input)
 	if !bytes.Equal(expected, actual) {
-		fmt.Println(string(actual))
 		t.Fail()
 	}
 }

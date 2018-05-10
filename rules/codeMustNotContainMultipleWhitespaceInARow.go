@@ -1,6 +1,9 @@
 package rules
 
-import "regexp"
+import (
+	"bytes"
+	"regexp"
+)
 
 var codeMustNotContainMultipleWhitespaceInARow = &Rule{
 	Name:        "Code must not contain multiple whitespaces in a row",
@@ -10,9 +13,13 @@ var codeMustNotContainMultipleWhitespaceInARow = &Rule{
 }
 
 func applyCodeMustNotContainMultipleWhitespaceInARow(source []byte) []byte {
-	re := regexp.MustCompile(`(\S)[ ]{2,}(\S)`)
-	for re.Match(source) {
-		source = re.ReplaceAll(source, []byte("$1 $2"))
-	}
-	return source
+	return scan(source, func(line, literal []byte) []byte {
+		re := regexp.MustCompile(`(\S)[ ]{2,}(\S)`)
+		if !bytes.Contains(literal, re.Find(line)) {
+			for re.Match(line) {
+				line = re.ReplaceAll(line, []byte("$1 $2"))
+			}
+		}
+		return line
+	})
 }

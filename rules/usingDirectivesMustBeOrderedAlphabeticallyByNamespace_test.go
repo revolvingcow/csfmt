@@ -2,7 +2,6 @@ package rules
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 )
 
@@ -24,7 +23,6 @@ using (var something = new Something()) {}`)
 
 	actual := applyUsingDirectivesMustBeOrderedAlphabeticallyByNamespace(input)
 	if !bytes.Equal(expected, actual) {
-		fmt.Println(string(actual))
 		t.Fail()
 	}
 
@@ -49,7 +47,6 @@ namespace Company.Blah {}`)
 
 	actual = applyUsingDirectivesMustBeOrderedAlphabeticallyByNamespace(input)
 	if !bytes.Equal(expected, actual) {
-		fmt.Println(string(actual))
 		t.Fail()
 	}
 }

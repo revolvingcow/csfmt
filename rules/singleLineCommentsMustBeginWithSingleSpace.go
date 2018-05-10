@@ -1,6 +1,11 @@
 package rules
 
-import "regexp"
+import (
+	"bufio"
+	"bytes"
+	"regexp"
+	"unicode"
+)
 
 var singleLineCommentsMustBeginWithSingleSpace = &Rule{
 	Name:        "Single line comments must begin with single space",
@@ -10,17 +15,53 @@ var singleLineCommentsMustBeginWithSingleSpace = &Rule{
 }
 
 func applySingleLineCommentsMustBeginWithSingleSpace(source []byte) []byte {
-	re := regexp.MustCompile(`([/]{2})([\S])`)
-	for re.Match(source) {
-		source = re.ReplaceAll(source, []byte("$1 $2"))
+	reString := regexp.MustCompile(`".*"`)
+
+	lines := []byte{}
+	buffer := bytes.NewBuffer(source)
+	scanner := bufio.NewScanner(buffer)
+
+	for scanner.Scan() {
+		// Add a newline character on each line after the first
+		if len(lines) > 0 {
+			lines = append(lines, byte('\n'))
+		}
+
+		line := scanner.Bytes()
+
+		literal := []byte{}
+		if reString.Match(line) {
+			literal = reString.Find(line)
+		}
+
+		// Handle comments with no space.
+		re := regexp.MustCompile(`(\s*)[/]{2}\s{0}(\S+)`)
+		for re.Match(line) {
+			if !bytes.Contains(literal, re.Find(line)) {
+				line = re.ReplaceAll(line, []byte("$1// $2"))
+			}
+		}
+
+		// Handle comments with more than one space
+		re = regexp.MustCompile(`(\s*)[/]{2}\s{2,}(\S+)`)
+		for re.Match(line) {
+			if !bytes.Contains(literal, re.Find(line)) {
+				line = re.ReplaceAll(line, []byte("$1// $2"))
+			}
+		}
+
+		// Adjust for URIs
+		re = regexp.MustCompile(`(\s*)[:]{1}[/]{2}\s+(\S+)`)
+		for re.Match(line) {
+			if !bytes.Contains(literal, re.Find(line)) {
+				line = re.ReplaceAll(line, []byte("$1://$2"))
+			}
+		}
+
+		// Trim ending
+		line = bytes.TrimRightFunc(line, unicode.IsSpace)
+		lines = append(lines, line...)
 	}
-	re = regexp.MustCompile(`([/]{2})([\s]{2,})([\S])`)
-	for re.Match(source) {
-		source = re.ReplaceAll(source, []byte("$1 $3"))
-	}
-	re = regexp.MustCompile(`([/]{2})([\s])([/]{1,})([\s]*)`)
-	for re.Match(source) {
-		source = re.ReplaceAll(source, []byte("$1$3"))
-	}
-	return source
+
+	return lines
 }

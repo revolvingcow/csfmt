@@ -2,14 +2,22 @@ package main
 
 import (
 	"bytes"
+	"flag"
+	"fmt"
 	"log"
 	"os"
 
-	"code.revolvingcow.com/revolvingcow/csfmt/rules"
+	"github.com/revolvingcow/csfmt/rules"
+)
+
+var (
+	flagWrite = flag.Bool("w", false, "write changes to file")
 )
 
 func main() {
 	sourceFiles := []SourceFile{}
+
+	flag.Parse()
 
 	// Determine what files to format
 	argc := len(os.Args)
@@ -31,22 +39,21 @@ func main() {
 		}
 	} else {
 		// Assuming multiple files were given
-		// for _, a := range os.Args[1:] {
-		a := os.Args[1]
-		s := SourceFile{
-			Path: a,
-		}
+		for _, a := range os.Args[1:] {
+			s := SourceFile{
+				Path: a,
+			}
 
-		if s.Exists() {
-			if s.IsDir() {
-				for sourceFile := range s.Walk() {
-					sourceFiles = append(sourceFiles, sourceFile)
+			if s.Exists() {
+				if s.IsDir() {
+					for sourceFile := range s.Walk() {
+						sourceFiles = append(sourceFiles, sourceFile)
+					}
+				} else if s.IsDotNet() {
+					sourceFiles = append(sourceFiles, s)
 				}
-			} else if s.IsDotNet() {
-				sourceFiles = append(sourceFiles, s)
 			}
 		}
-		// }
 	}
 
 	count := len(sourceFiles)
@@ -66,10 +73,14 @@ func main() {
 
 		if bytes.Compare(original, contents) != 0 {
 			modified++
+			if *flagWrite {
+				s.Write(contents)
+			}
 		}
 
-		s.Write(contents)
-		// fmt.Println(string(contents))
+		if !*flagWrite {
+			fmt.Println(string(contents))
+		}
 	}
 
 	log.Printf("Modified %d of %d files using %d rules\n", modified, count, len(queuedRules))

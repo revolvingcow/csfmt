@@ -2,7 +2,6 @@ package rules
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 )
 
@@ -26,7 +25,6 @@ func TestSemicolonsMustBeSpacedCorrectly(t *testing.T) {
 
 	actual := applySemicolonsMustBeSpacedCorrectly(input)
 	if !bytes.Equal(expected, actual) {
-		fmt.Println(string(actual))
 		t.Fail()
 	}
 }

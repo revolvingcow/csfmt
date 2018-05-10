@@ -2,13 +2,11 @@ package rules
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 )
 
 func TestPreprocessorKeywordsMustNotBePrecededBySpace(t *testing.T) {
-	input := []byte(`
-# if
+	input := []byte(`# if
 	// Something
 # else
 	// Something
@@ -25,8 +23,7 @@ func TestPreprocessorKeywordsMustNotBePrecededBySpace(t *testing.T) {
 # pragma
 # pragma warning
 # pragma checksum`)
-	expected := []byte(`
-#if
+	expected := []byte(`#if
 	// Something
 #else
 	// Something
@@ -46,7 +43,6 @@ func TestPreprocessorKeywordsMustNotBePrecededBySpace(t *testing.T) {
 
 	actual := applyPreprocessorKeywordsMustNotBePrecededBySpace(input)
 	if !bytes.Equal(expected, actual) {
-		fmt.Println(string(actual))
 		t.Fail()
 	}
 }

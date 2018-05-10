@@ -1,6 +1,9 @@
 package rules
 
-import "regexp"
+import (
+	"bytes"
+	"regexp"
+)
 
 var commasMustBeSpacedCorrectly = &Rule{
 	Name:        "Commas must be spaced correctly",
@@ -16,16 +19,22 @@ func applyCommasMustBeSpacedCorrectly(source []byte) []byte {
 		source = re.ReplaceAllLiteral(source, []byte(","))
 	}
 
-	// Add trailing spaces as necessary
-	re = regexp.MustCompile(`(\S),(\w|\d)`)
-	for re.Match(source) {
-		source = re.ReplaceAll(source, []byte("$1, $2"))
-	}
+	return scan(source, func(line, literal []byte) []byte {
+		// Add trailing spaces as necessary
+		re = regexp.MustCompile(`(\S),(\w|\d)`)
+		for re.Match(line) {
+			if !bytes.Contains(literal, re.Find(line)) {
+				line = re.ReplaceAll(line, []byte("$1, $2"))
+			}
+		}
 
-	// Look for too many trailing spaces
-	re = regexp.MustCompile(`\,  `)
-	for re.Match(source) {
-		source = re.ReplaceAll(source, []byte(", "))
-	}
-	return source
+		// Look for too many trailing spaces
+		re = regexp.MustCompile(`\,  `)
+		for re.Match(line) {
+			if !bytes.Contains(literal, re.Find(line)) {
+				line = re.ReplaceAll(line, []byte(", "))
+			}
+		}
+		return line
+	})
 }

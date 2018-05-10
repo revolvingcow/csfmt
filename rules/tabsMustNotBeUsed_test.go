@@ -2,31 +2,15 @@ package rules
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 )
 
 func TestTabsMustNotBeUsed(t *testing.T) {
-	input := []byte(`public void FunctionName(string s, int i)
-{
-	var i = 0; // blah
-	for (i = 0; i < 4; i++) {
-		// Do something
-	}
-	return s + i.ToString();
-}`)
-	expected := []byte(`public void FunctionName(string s, int i)
-{
-    var i = 0; // blah
-    for (i = 0; i < 4; i++) {
-        // Do something
-    }
-    return s + i.ToString();
-}`)
+	input := []byte("public void FunctionName(string s, int i)\n{\n\tvar i = 0; // blah\n\tfor (i = 0; i < 4; i++) {\n\t\t// Do something\n\t}\n\treturn s + i.ToString();\n}")
+	expected := []byte("public void FunctionName(string s, int i)\n{\n    var i = 0; // blah\n    for (i = 0; i < 4; i++) {\n        // Do something\n    }\n    return s + i.ToString();\n}")
 
 	actual := applyTabsMustNotBeUsed(input)
 	if !bytes.Equal(expected, actual) {
-		fmt.Println(string(actual))
 		t.Fail()
 	}
 }
