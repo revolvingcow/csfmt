@@ -1,6 +1,10 @@
 package rules
 
-var Library = []*Rule{
+import (
+	"github.com/revolvingcow/csfmt"
+)
+
+var Library = []*csfmt.Rule{
 	codeMustNotContainMultipleBlankLinesInARow,
 	usingDirectivesMustBeOrderedAlphabeticallyByNamespace,
 	symbolsMustBeSpacedCorrectly,
@@ -13,13 +17,12 @@ var Library = []*Rule{
 	closingParenthesisMustBeSpacedCorrectly,
 	openingSquareBracketsMustBeSpacedCorrectly,
 	closingSquareBracketsMustBeSpacedCorrectly,
-	colonsMustBeSpacedCorrectly,
 	codeMustNotContainMultipleWhitespaceInARow,
 	tabsMustNotBeUsed,
 }
 
-func Enabled() []*Rule {
-	enabled := []*Rule{}
+func Enabled() []*csfmt.Rule {
+	enabled := []*csfmt.Rule{}
 	for _, rule := range Library {
 		if rule.Enabled {
 			enabled = append(enabled, rule)

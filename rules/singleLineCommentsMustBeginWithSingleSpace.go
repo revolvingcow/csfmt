@@ -5,9 +5,11 @@ import (
 	"bytes"
 	"regexp"
 	"unicode"
+
+	"github.com/revolvingcow/csfmt"
 )
 
-var singleLineCommentsMustBeginWithSingleSpace = &Rule{
+var singleLineCommentsMustBeginWithSingleSpace = &csfmt.Rule{
 	Name:        "Single line comments must begin with single space",
 	Enabled:     true,
 	Apply:       applySingleLineCommentsMustBeginWithSingleSpace,

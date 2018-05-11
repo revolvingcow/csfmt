@@ -2,9 +2,11 @@ package rules
 
 import (
 	"regexp"
+
+	"github.com/revolvingcow/csfmt"
 )
 
-var tabsMustNotBeUsed = &Rule{
+var tabsMustNotBeUsed = &csfmt.Rule{
 	Name:        "Tabs must not be used",
 	Enabled:     true,
 	Apply:       applyTabsMustNotBeUsed,

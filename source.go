@@ -1,4 +1,4 @@
-package main
+package csfmt
 
 import (
 	"io/ioutil"

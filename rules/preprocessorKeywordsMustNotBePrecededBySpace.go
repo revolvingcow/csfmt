@@ -3,9 +3,11 @@ package rules
 import (
 	"bytes"
 	"regexp"
+
+	"github.com/revolvingcow/csfmt"
 )
 
-var preprocessorKeywordsMustNotBePrecededBySpace = &Rule{
+var preprocessorKeywordsMustNotBePrecededBySpace = &csfmt.Rule{
 	Name:        "Single line comments must begin with single space",
 	Enabled:     true,
 	Apply:       applyPreprocessorKeywordsMustNotBePrecededBySpace,

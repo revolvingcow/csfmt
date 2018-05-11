@@ -3,9 +3,11 @@ package rules
 import (
 	"bytes"
 	"regexp"
+
+	"github.com/revolvingcow/csfmt"
 )
 
-var codeMustNotContainMultipleWhitespaceInARow = &Rule{
+var codeMustNotContainMultipleWhitespaceInARow = &csfmt.Rule{
 	Name:        "Code must not contain multiple whitespaces in a row",
 	Enabled:     true,
 	Apply:       applyCodeMustNotContainMultipleWhitespaceInARow,

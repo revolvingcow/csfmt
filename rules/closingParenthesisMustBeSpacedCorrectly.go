@@ -3,9 +3,11 @@ package rules
 import (
 	"bytes"
 	"regexp"
+
+	"github.com/revolvingcow/csfmt"
 )
 
-var closingParenthesisMustBeSpacedCorrectly = &Rule{
+var closingParenthesisMustBeSpacedCorrectly = &csfmt.Rule{
 	Name:        "Closing parenthesis must be spaced correctly",
 	Enabled:     true,
 	Apply:       applyClosingParenthesisMustBeSpacedCorrectly,

@@ -3,9 +3,11 @@ package rules
 import (
 	"bytes"
 	"regexp"
+
+	"github.com/revolvingcow/csfmt"
 )
 
-var commasMustBeSpacedCorrectly = &Rule{
+var commasMustBeSpacedCorrectly = &csfmt.Rule{
 	Name:        "Commas must be spaced correctly",
 	Enabled:     true,
 	Apply:       applyCommasMustBeSpacedCorrectly,

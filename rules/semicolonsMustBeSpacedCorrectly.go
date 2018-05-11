@@ -3,9 +3,11 @@ package rules
 import (
 	"bytes"
 	"regexp"
+
+	"github.com/revolvingcow/csfmt"
 )
 
-var semicolonsMustBeSpacedCorrectly = &Rule{
+var semicolonsMustBeSpacedCorrectly = &csfmt.Rule{
 	Name:        "Semicolons must be spaced correctly",
 	Enabled:     true,
 	Apply:       applySemicolonsMustBeSpacedCorrectly,

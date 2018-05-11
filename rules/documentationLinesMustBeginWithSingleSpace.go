@@ -2,9 +2,11 @@ package rules
 
 import (
 	"regexp"
+
+	"github.com/revolvingcow/csfmt"
 )
 
-var documentationLinesMustBeginWithSingleSpace = &Rule{
+var documentationLinesMustBeginWithSingleSpace = &csfmt.Rule{
 	Name:        "Documentation lines must begin with a single space",
 	Enabled:     true,
 	Apply:       applyDocumentationLinesMustBeginWithSingleSpace,

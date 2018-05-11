@@ -19,11 +19,11 @@ func TestClosingParenthesisMustBeSpacedCorrectly(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		t.Run(test.description, func (t *testing.T) {
-				actual := applyClosingParenthesisMustBeSpacedCorrectly(test.given)
-				if !bytes.Equal(test.expected, actual) {
-					t.Errorf("Got `%s` but wanted `%s`", string(actual), string(test.expected))
-				}
+		t.Run(test.description, func(t *testing.T) {
+			actual := applyClosingParenthesisMustBeSpacedCorrectly(test.given)
+			if !bytes.Equal(test.expected, actual) {
+				t.Errorf("Got `%s` but wanted `%s`", string(actual), string(test.expected))
+			}
 		})
 	}
 }

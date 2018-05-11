@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"github.com/revolvingcow/csfmt/rules"
 	"log"
 	"os"
+
+	"github.com/revolvingcow/csfmt"
+	"github.com/revolvingcow/csfmt/rules"
 )
 
 var (
@@ -15,7 +17,7 @@ var (
 
 func main() {
 	flag.Parse()
-	sourceFiles := []SourceFile{}
+	sourceFiles := []csfmt.SourceFile{}
 
 	// Determine what files to format
 	argc := len(os.Args)
@@ -28,7 +30,7 @@ func main() {
 			return
 		}
 
-		s := SourceFile{
+		s := csfmt.SourceFile{
 			Path: cwd,
 		}
 
@@ -38,7 +40,7 @@ func main() {
 	} else {
 		// Assuming multiple files were given
 		for _, a := range os.Args[1:] {
-			s := SourceFile{
+			s := csfmt.SourceFile{
 				Path: a,
 			}
 

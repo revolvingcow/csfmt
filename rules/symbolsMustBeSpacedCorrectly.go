@@ -3,9 +3,11 @@ package rules
 import (
 	"bytes"
 	"regexp"
+
+	"github.com/revolvingcow/csfmt"
 )
 
-var symbolsMustBeSpacedCorrectly = &Rule{
+var symbolsMustBeSpacedCorrectly = &csfmt.Rule{
 	Name:        "Symbols must be spaced correctly",
 	Enabled:     false,
 	Apply:       applySymbolsMustBeSpacedCorrectly,

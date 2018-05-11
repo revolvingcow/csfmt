@@ -2,9 +2,11 @@ package rules
 
 import (
 	"regexp"
+
+	"github.com/revolvingcow/csfmt"
 )
 
-var codeMustNotContainMultipleBlankLinesInARow = &Rule{
+var codeMustNotContainMultipleBlankLinesInARow = &csfmt.Rule{
 	Name:        "Code must not contain multiple blank lines in a row",
 	Enabled:     true,
 	Apply:       applyCodeMustNotContainMultipleBlankLinesInARow,

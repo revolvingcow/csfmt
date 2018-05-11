@@ -3,9 +3,11 @@ package rules
 import (
 	"bytes"
 	"regexp"
+
+	"github.com/revolvingcow/csfmt"
 )
 
-var closingSquareBracketsMustBeSpacedCorrectly = &Rule{
+var closingSquareBracketsMustBeSpacedCorrectly = &csfmt.Rule{
 	Name:        "Closing square brackets must be spaced correctly",
 	Enabled:     true,
 	Apply:       applyClosingSquareBracketsMustBeSpacedCorrectly,

@@ -6,25 +6,27 @@ This program was converted to **literate programming** with the help of [lmt](ht
 
 ## How to get it
 
-Go ahead and pull the latest from Github
+To install the binary
 
 ``` shell
-go get -u github.com/revolvingcow/csfmt
+go get -u github.com/revolvingcow/csfmt/cmd/csfmt
 ```
 
-To generate the latest code from this file run
+To compile from source
 
 ``` shell
-lmt README.md
-```
-
-and then build normally with Go
-
-``` shell
-go build
+go get -u github.com/driusan/lmt;
+go get -u github.com/revolvingcow/csfmt;
+cd $GOPATH/src/github.com/revolvingcow/csfmt;
+lmt README.md;
+cd $GOPATH/src/github.com/revolvingcow/csfmt/cmd/csfmt;
+go build;
 ```
 
 ## What problem is being solved?
+
+Stop arguing over style preferences within the syntax and start focusing on readability and business
+logic. This should work across platforms and be editor agnostic.
 
 ## Finding files to apply rule sets
 
@@ -35,12 +37,13 @@ From a high level view we are looking for this basic workflow:
  3. Gather all rules we need to apply
  4. Loop through all found files and apply the rule set
 
-``` go main.go
+``` go cmd/csfmt/main.go
 package main
 
 import (
 	"flag"
 	<<<main.go imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 var (
@@ -49,7 +52,7 @@ var (
 
 func main() {
 	flag.Parse()
-	sourceFiles := []SourceFile{}
+	sourceFiles := []csfmt.SourceFile{}
 
 	<<<handle command arguments>>>
 	<<<setup statistics>>>
@@ -65,7 +68,7 @@ A source file will be considered any file container source code which would appl
 our case this typically this will be files with the C# extension of `.cs`.
 
 ``` go source.go
-package main
+package csfmt
 
 import (
 	<<<source file imports>>>
@@ -224,8 +227,11 @@ func (f *SourceFile) Walk() chan SourceFile {
 
 ### What is a rule?
 
-``` go rules/rules.go
-package rules
+A rule is a basic unit which describes its intent and how to apply it to the contents of the
+source file.
+
+``` go rule.go
+package csfmt
 
 // Rule is a style rule to look for and apply within the source code.
 type Rule struct {
@@ -237,6 +243,9 @@ type Rule struct {
 ```
 
 ### Apply the basic structures to our workflow
+
+Since the basic building blocks have been declared let's first work out
+to find our source files which we will apply the rule set to.
 
 ``` go "handle command arguments"
 // Determine what files to format
@@ -250,7 +259,7 @@ if argc < 2 {
 		return
 	}
 
-	s := SourceFile{
+	s := csfmt.SourceFile{
 		Path: cwd,
 	}
 
@@ -260,7 +269,7 @@ if argc < 2 {
 } else {
 	// Assuming multiple files were given
 	for _, a := range os.Args[1:] {
-		s := SourceFile{
+		s := csfmt.SourceFile{
 			Path: a,
 		}
 
@@ -392,7 +401,11 @@ document thus reducing dead code.
 ``` go rules/index.go
 package rules
 
-var Library = []*Rule{
+import (
+	"github.com/revolvingcow/csfmt"
+)
+
+var Library = []*csfmt.Rule{
 	codeMustNotContainMultipleBlankLinesInARow,
 	usingDirectivesMustBeOrderedAlphabeticallyByNamespace,
 	symbolsMustBeSpacedCorrectly,
@@ -405,7 +418,6 @@ var Library = []*Rule{
 	closingParenthesisMustBeSpacedCorrectly,
 	openingSquareBracketsMustBeSpacedCorrectly,
 	closingSquareBracketsMustBeSpacedCorrectly,
-	colonsMustBeSpacedCorrectly,
 	codeMustNotContainMultipleWhitespaceInARow,
 	tabsMustNotBeUsed,
 }
@@ -414,8 +426,8 @@ var Library = []*Rule{
 Now we need a way to filter out any rules which are not enabled.
 
 ``` go rules/index.go +=
-func Enabled() []*Rule {
-	enabled := []*Rule{}
+func Enabled() []*csfmt.Rule {
+	enabled := []*csfmt.Rule{}
 	for _, rule := range Library {
 		if rule.Enabled {
 			enabled = append(enabled, rule)
@@ -575,25 +587,25 @@ Oops, looks like we missed an import for a package!
 
 #### Layout
 
- - [ ] SA1500: CurlyBracketsForMultiLineStatementsMustNotShareLine</A></P>
- - [ ] SA1501: StatementMustNotBeOnSingleLine</A></P>
- - [ ] SA1502: ElementMustNotBeOnSingleLine</A></P>
- - [ ] SA1503: CurlyBracketsMustNotBeOmitted</A></P>
- - [ ] SA1504: AllAccessorMustBeMultiLineOrSingleLine</A></P>
- - [ ] SA1505: OpeningCurlyBracketsMustNotBeFollowedByBlankLine</A></P>
- - [ ] SA1506: ElementDocumentationHeadersMustNotBeFollowedByBlankLine</A></P>
- - [x] SA1507: CodeMustNotContainMultipleBlankLinesInARow</A></P>
- - [ ] SA1508: ClosingCurlyBracketsMustNotBePrecededByBlankLine</A></P>
- - [ ] SA1509: OpeningCurlyBracketsMustNotBePrecedededByBlankLine</A></P>
- - [ ] SA1510: ChainedStatementBlocksMustNotBePrecededByBlankLine</A></P>
- - [ ] SA1511: WhileDoFooterMustNotBePrecededByBlankLine</A></P>
- - [ ] SA1512: SingleLineCommentsMustNotBeFollowedByBlankLine</A></P>
- - [ ] SA1513: ClosingCurlyBracketMustBeFollowedByBlankLine</A></P>
- - [ ] SA1514: ElementDocumentationHeaderMustBePrecededByBlankLine</A></P>
- - [ ] SA1515: SingleLineCommentMustBePrecededByBlankLine</A></P>
- - [ ] SA1516: ElementsMustBeSeparatedByBlankLine</A></P>
- - [ ] SA1517: CodeMustNotContainBlankLinesAtStartOfFile</A></P>
- - [ ] SA1518: CodeMustNotContainBlankLinesAtEndOfFile</A></P>
+ - [ ] SA1500: CurlyBracketsForMultiLineStatementsMustNotShareLine
+ - [ ] SA1501: StatementMustNotBeOnSingleLine
+ - [ ] SA1502: ElementMustNotBeOnSingleLine
+ - [ ] SA1503: CurlyBracketsMustNotBeOmitted
+ - [ ] SA1504: AllAccessorMustBeMultiLineOrSingleLine
+ - [ ] SA1505: OpeningCurlyBracketsMustNotBeFollowedByBlankLine
+ - [ ] SA1506: ElementDocumentationHeadersMustNotBeFollowedByBlankLine
+ - [x] SA1507: CodeMustNotContainMultipleBlankLinesInARow
+ - [ ] SA1508: ClosingCurlyBracketsMustNotBePrecededByBlankLine
+ - [ ] SA1509: OpeningCurlyBracketsMustNotBePrecedededByBlankLine
+ - [ ] SA1510: ChainedStatementBlocksMustNotBePrecededByBlankLine
+ - [ ] SA1511: WhileDoFooterMustNotBePrecededByBlankLine
+ - [ ] SA1512: SingleLineCommentsMustNotBeFollowedByBlankLine
+ - [ ] SA1513: ClosingCurlyBracketMustBeFollowedByBlankLine
+ - [ ] SA1514: ElementDocumentationHeaderMustBePrecededByBlankLine
+ - [ ] SA1515: SingleLineCommentMustBePrecededByBlankLine
+ - [ ] SA1516: ElementsMustBeSeparatedByBlankLine
+ - [ ] SA1517: CodeMustNotContainBlankLinesAtStartOfFile
+ - [ ] SA1518: CodeMustNotContainBlankLinesAtEndOfFile
 
 #### Maintainability
 
@@ -678,7 +690,7 @@ Oops, looks like we missed an import for a package!
 #### Spacing
 
  - [ ] SA1000: KeywordsMustBeSpacedCorrectly
- - [ ] SA1001: CommasMustBeSpacedCorrectly
+ - [x] SA1001: CommasMustBeSpacedCorrectly
  - [x] SA1002: SemicolonsMustBeSpacedCorrectly
  - [x] SA1003: SymbolsMustBeSpacedCorrectly
  - [x] SA1004: DocumentationLinesMustBeginWithSingleSpace
@@ -706,6 +718,128 @@ Oops, looks like we missed an import for a package!
  - [ ] SA1026: CodeMustNotContainSpaceAfterNewKeywordInImplicitlyTypedArrayAllocation
  - [x] SA1027: TabsMustNotBeUsed
 
+### SA1001: Semicolons must be spaced correctly
+
+First the template
+
+``` go rules/commasMustBeSpacedCorrectly.go
+package rules
+
+import (
+	<<<sa1001 imports>>>
+	"github.com/revolvingcow/csfmt"
+)
+
+<<<sa1001 rule>>>
+<<<sa1001 application>>>
+```
+
+``` go "sa1001 application"
+func applyCommasMustBeSpacedCorrectly(source []byte) []byte {
+	// Look for leading spaces
+	re := regexp.MustCompile(`(\n)*[\s]+,`)
+	for re.Match(source) {
+		source = re.ReplaceAllLiteral(source, []byte(","))
+	}
+
+	return scan(source, func(line, literal []byte) []byte {
+		// Add trailing spaces as necessary
+		re = regexp.MustCompile(`(\S),(\w|\d)`)
+		for re.Match(line) {
+			if !bytes.Contains(literal, re.Find(line)) {
+				line = re.ReplaceAll(line, []byte("$1, $2"))
+			}
+		}
+
+		// Look for too many trailing spaces
+		re = regexp.MustCompile(`\,  `)
+		for re.Match(line) {
+			if !bytes.Contains(literal, re.Find(line)) {
+				line = re.ReplaceAll(line, []byte(", "))
+			}
+		}
+		return line
+	})
+}
+```
+
+Bring in used packages
+
+``` go "sa1001 imports"
+"bytes"
+"regexp"
+```
+
+Now the logic has been worked out we'll apply create the rule.
+
+``` go "sa1001 rule"
+var commasMustBeSpacedCorrectly = &csfmt.Rule{
+	Name:        "Commas must be spaced correctly",
+	Enabled:     true,
+	Apply:       applyCommasMustBeSpacedCorrectly,
+	Description: ``,
+}
+```
+
+Setup the test harness
+
+``` go rules/commasMustBeSpacedCorrectly_test.go
+package rules
+
+import (
+	"bytes"
+	"testing"
+)
+
+func TestCommasMustBeSpacedCorrectly(t *testing.T) {
+	tests := []struct {
+		description string
+		given       []byte
+		expected    []byte
+	}{
+		<<<sa1001 tests>>>
+	}
+
+	for _, test := range tests {
+		t.Run(test.description, func (t *testing.T) {
+				actual := applyCommasMustBeSpacedCorrectly(test.given)
+				if !bytes.Equal(test.expected, actual) {
+					t.Errorf("Got `%s` but wanted `%s`", string(actual), string(test.expected))
+				}
+		})
+	}
+}
+```
+
+and declare our expectations
+
+``` go "sa1001 tests"
+{
+	description: "fix spacing around multiline commas",
+	given: []byte(
+		"public void FunctionName(string s ,int i\n" +
+		"	, object x)\n" +
+		"{\n" +
+		"	int[] b = new [1,   3,4 ,5];\n" +
+		"	var o = new {\n" +
+		"		blah = \"stomething\",\n" +
+		"		meh = 0,\n" +
+		"		dude = true,\n" +
+		"	};\n" +
+		"}"),
+	expected: []byte(
+		"public void FunctionName(string s, int i, object x)\n" +
+		"{\n" +
+		"	int[] b = new [1, 3, 4, 5];\n" +
+		"	var o = new {\n" +
+		"		blah = \"stomething\",\n" +
+		"		meh = 0,\n" +
+		"		dude = true,\n" +
+		"	};\n" +
+		"}"),
+},
+```
+
 ### SA1002: Semicolons must be spaced correctly
 
 First the template
@@ -715,6 +849,7 @@ package rules
 
 import (
 	<<<sa1002 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1002 rule>>>
@@ -754,7 +889,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1002 rule"
-var semicolonsMustBeSpacedCorrectly = &Rule{
+var semicolonsMustBeSpacedCorrectly = &csfmt.Rule{
 	Name:        "Semicolons must be spaced correctly",
 	Enabled:     true,
 	Apply:       applySemicolonsMustBeSpacedCorrectly,
@@ -810,6 +945,7 @@ package rules
 
 import (
 	<<<sa1003 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1003 rule>>>
@@ -895,7 +1031,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1003 rule"
-var symbolsMustBeSpacedCorrectly = &Rule{
+var symbolsMustBeSpacedCorrectly = &csfmt.Rule{
 	Name:        "Symbols must be spaced correctly",
 	Enabled:     false,
 	Apply:       applySymbolsMustBeSpacedCorrectly,
@@ -969,6 +1105,7 @@ package rules
 
 import (
 	<<<sa1004 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1004 rule>>>
@@ -994,7 +1131,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1004 rule"
-var documentationLinesMustBeginWithSingleSpace = &Rule{
+var documentationLinesMustBeginWithSingleSpace = &csfmt.Rule{
 	Name:        "Documentation lines must begin with a single space",
 	Enabled:     true,
 	Apply:       applyDocumentationLinesMustBeginWithSingleSpace,
@@ -1050,6 +1187,7 @@ package rules
 
 import (
 	<<<sa1005 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1005 rule>>>
@@ -1122,7 +1260,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1005 rule"
-var singleLineCommentsMustBeginWithSingleSpace = &Rule{
+var singleLineCommentsMustBeginWithSingleSpace = &csfmt.Rule{
 	Name:        "Single line comments must begin with single space",
 	Enabled:     true,
 	Apply:       applySingleLineCommentsMustBeginWithSingleSpace,
@@ -1179,6 +1317,7 @@ package rules
 
 import (
 	<<<sa1006 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1006 rule>>>
@@ -1211,7 +1350,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1006 rule"
-var preprocessorKeywordsMustNotBePrecededBySpace = &Rule{
+var preprocessorKeywordsMustNotBePrecededBySpace = &csfmt.Rule{
 	Name:        "Single line comments must begin with single space",
 	Enabled:     true,
 	Apply:       applyPreprocessorKeywordsMustNotBePrecededBySpace,
@@ -1277,6 +1416,7 @@ package rules
 
 import (
 	<<<sa1008 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1008 rule>>>
@@ -1320,7 +1460,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1008 rule"
-var openingParenthesisMustBeSpacedCorrectly = &Rule{
+var openingParenthesisMustBeSpacedCorrectly = &csfmt.Rule{
 	Name:        "Opening parenthesis must be spaced correctly",
 	Enabled:     true,
 	Apply:       applyOpeningParenthesisMustBeSpacedCorrectly,
@@ -1378,6 +1518,7 @@ package rules
 
 import (
 	<<<sa1009 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1009 rule>>>
@@ -1422,7 +1563,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1009 rule"
-var closingParenthesisMustBeSpacedCorrectly = &Rule{
+var closingParenthesisMustBeSpacedCorrectly = &csfmt.Rule{
 	Name:        "Closing parenthesis must be spaced correctly",
 	Enabled:     true,
 	Apply:       applyClosingParenthesisMustBeSpacedCorrectly,
@@ -1479,6 +1620,7 @@ package rules
 
 import (
 	<<<sa1010 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1010 rule>>>
@@ -1513,7 +1655,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1010 rule"
-var openingSquareBracketsMustBeSpacedCorrectly = &Rule{
+var openingSquareBracketsMustBeSpacedCorrectly = &csfmt.Rule{
 	Name:        "Opening square brackets must be spaced correctly",
 	Enabled:     true,
 	Apply:       applyOpeningSquareBracketsMustBeSpacedCorrectly,
@@ -1570,6 +1712,7 @@ package rules
 
 import (
 	<<<sa1011 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1011 rule>>>
@@ -1608,7 +1751,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1011 rule"
-var closingSquareBracketsMustBeSpacedCorrectly = &Rule{
+var closingSquareBracketsMustBeSpacedCorrectly = &csfmt.Rule{
 	Name:        "Closing square brackets must be spaced correctly",
 	Enabled:     true,
 	Apply:       applyClosingSquareBracketsMustBeSpacedCorrectly,
@@ -1665,6 +1808,7 @@ package rules
 
 import (
 	<<<sa1025 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1025 rule>>>
@@ -1695,7 +1839,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1025 rule"
-var codeMustNotContainMultipleWhitespaceInARow = &Rule{
+var codeMustNotContainMultipleWhitespaceInARow = &csfmt.Rule{
 	Name:        "Code must not contain multiple whitespaces in a row",
 	Enabled:     true,
 	Apply:       applyCodeMustNotContainMultipleWhitespaceInARow,
@@ -1748,6 +1892,7 @@ package rules
 
 import (
 	<<<sa1027 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1027 rule>>>
@@ -1773,7 +1918,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1027 rule"
-var tabsMustNotBeUsed = &Rule{
+var tabsMustNotBeUsed = &csfmt.Rule{
 	Name:        "Tabs must not be used",
 	Enabled:     true,
 	Apply:       applyTabsMustNotBeUsed,
@@ -1830,6 +1975,7 @@ package rules
 
 import (
 	<<<sa1210 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1210 rule>>>
@@ -1877,7 +2023,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1210 rule"
-var usingDirectivesMustBeOrderedAlphabeticallyByNamespace = &Rule{
+var usingDirectivesMustBeOrderedAlphabeticallyByNamespace = &csfmt.Rule{
 	Name:        "Using directives must be ordered alphabetically by namespace",
 	Enabled:     true,
 	Apply:       applyUsingDirectivesMustBeOrderedAlphabeticallyByNamespace,
@@ -1971,6 +2117,7 @@ package rules
 
 import (
 	<<<sa1507 imports>>>
+	"github.com/revolvingcow/csfmt"
 )
 
 <<<sa1507 rule>>>
@@ -1996,7 +2143,7 @@ Bring in used packages
 Now the logic has been worked out we'll apply create the rule.
 
 ``` go "sa1507 rule"
-var codeMustNotContainMultipleBlankLinesInARow = &Rule{
+var codeMustNotContainMultipleBlankLinesInARow = &csfmt.Rule{
 	Name:        "Code must not contain multiple blank lines in a row",
 	Enabled:     true,
 	Apply:       applyCodeMustNotContainMultipleBlankLinesInARow,

@@ -5,9 +5,11 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/revolvingcow/csfmt"
 )
 
-var usingDirectivesMustBeOrderedAlphabeticallyByNamespace = &Rule{
+var usingDirectivesMustBeOrderedAlphabeticallyByNamespace = &csfmt.Rule{
 	Name:        "Using directives must be ordered alphabetically by namespace",
 	Enabled:     true,
 	Apply:       applyUsingDirectivesMustBeOrderedAlphabeticallyByNamespace,

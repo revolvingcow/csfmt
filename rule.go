@@ -1,4 +1,4 @@
-package rules
+package csfmt
 
 // Rule is a style rule to look for and apply within the source code.
 type Rule struct {
