@@ -6,20 +6,35 @@ import (
 )
 
 func TestCodeMustNotContainMultipleBlankLinesInARow(t *testing.T) {
-	input := []byte(`public void FunctionName(string s, int i)
-{
+	tests := []struct {
+		description string
+		given       []byte
+		expected    []byte
+	}{
+		{
+			description: "remove multiple blank lines",
+			given: []byte(
+				"public void FunctionName(string s, int i)\n" +
+					"{\n" +
+					"\n" +
+					"\n" +
+					"\n" +
+					"    return s + i.ToString();\n" +
+					"}\n"),
+			expected: []byte(
+				"public void FunctionName(string s, int i)\n" +
+					"{\n" +
+					"    return s + i.ToString();\n" +
+					"}\n"),
+		},
+	}
 
-
-
-	return s + i.ToString();
-}`)
-	expected := []byte(`public void FunctionName(string s, int i)
-{
-	return s + i.ToString();
-}`)
-
-	actual := applyCodeMustNotContainMultipleBlankLinesInARow(input)
-	if !bytes.Equal(expected, actual) {
-		t.Fail()
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			actual := applyCodeMustNotContainMultipleBlankLinesInARow(test.given)
+			if !bytes.Equal(test.expected, actual) {
+				t.Errorf("Got `%s` but wanted `%s`", string(actual), string(test.expected))
+			}
+		})
 	}
 }

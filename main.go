@@ -4,10 +4,9 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"github.com/revolvingcow/csfmt/rules"
 	"log"
 	"os"
-
-	"github.com/revolvingcow/csfmt/rules"
 )
 
 var (
@@ -15,9 +14,8 @@ var (
 )
 
 func main() {
-	sourceFiles := []SourceFile{}
-
 	flag.Parse()
+	sourceFiles := []SourceFile{}
 
 	// Determine what files to format
 	argc := len(os.Args)
@@ -55,11 +53,9 @@ func main() {
 			}
 		}
 	}
-
 	count := len(sourceFiles)
 	modified := 0
-	queuedRules := rules.EnabledRules()
-
+	queuedRules := rules.Enabled()
 	for _, s := range sourceFiles {
 		contents, err := s.Read()
 		if err != nil {
@@ -82,6 +78,5 @@ func main() {
 			fmt.Println(string(contents))
 		}
 	}
-
 	log.Printf("Modified %d of %d files using %d rules\n", modified, count, len(queuedRules))
 }

@@ -6,25 +6,23 @@ import (
 )
 
 func TestSemicolonsMustBeSpacedCorrectly(t *testing.T) {
-	input := []byte(`public void FunctionName(string s, int i)
-{
-	var i = 0; // blah
-	for (i = 0;i < 4;i++) {
-		// Do something
+	tests := []struct {
+		description string
+		given       []byte
+		expected    []byte
+	}{
+		{description: "when none are found", given: []byte("public void FunctionName(string s, int i)"), expected: []byte("public void FunctionName(string s, int i)")},
+		{description: "with inline comment", given: []byte("var i = 0;// blah"), expected: []byte("var i = 0; // blah")},
+		{description: "with no trailing space", given: []byte("for (i = 0;i < 4;i++) {"), expected: []byte("for (i = 0; i < 4; i++) {")},
+		{description: "with leading space and trailing space", given: []byte("return s + i.ToString() ; "), expected: []byte("return s + i.ToString();")},
 	}
-	return s + i.ToString() ;
-}`)
-	expected := []byte(`public void FunctionName(string s, int i)
-{
-	var i = 0; // blah
-	for (i = 0; i < 4; i++) {
-		// Do something
-	}
-	return s + i.ToString();
-}`)
 
-	actual := applySemicolonsMustBeSpacedCorrectly(input)
-	if !bytes.Equal(expected, actual) {
-		t.Fail()
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			actual := applySemicolonsMustBeSpacedCorrectly(test.given)
+			if !bytes.Equal(test.expected, actual) {
+				t.Errorf("Got `%s` but wanted `%s`", string(actual), string(test.expected))
+			}
+		})
 	}
 }

@@ -6,23 +6,24 @@ import (
 )
 
 func TestOpeningSquareBracketsMustBeSpacedCorrectly(t *testing.T) {
-	input := []byte(`new string [] {};
-new int [ 1];
-new string [
-	"blah",
-	"meh",
-	"bleh"
-]`)
-	expected := []byte(`new string[] {};
-new int[1];
-new string[
-	"blah",
-	"meh",
-	"bleh"
-]`)
+	tests := []struct {
+		description string
+		given       []byte
+		expected    []byte
+	}{
+		{description: "array declaration", given: []byte("new string [] {};"), expected: []byte("new string[] {};")},
+		{description: "array declaration with size", given: []byte("new int [ 1];"), expected: []byte("new int[1];")},
+		{description: "multiline array declaration opening", given: []byte("new string ["), expected: []byte("new string[")},
+		{description: "multiline array declaration closing", given: []byte("]"), expected: []byte("]")},
+		{description: "ignore in string", given: []byte("\"[ meh].[bleh]\","), expected: []byte("\"[ meh].[bleh]\",")},
+	}
 
-	actual := applyOpeningSquareBracketsMustBeSpacedCorrectly(input)
-	if !bytes.Equal(expected, actual) {
-		t.Fail()
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			actual := applyOpeningSquareBracketsMustBeSpacedCorrectly(test.given)
+			if !bytes.Equal(test.expected, actual) {
+				t.Errorf("Got `%s` but wanted `%s`", string(actual), string(test.expected))
+			}
+		})
 	}
 }

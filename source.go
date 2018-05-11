@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	extensions = [...]string{".cs"}
+	extensions = []string{".cs"}
 )
 
 // SourceFile represents a file declared as source code.
@@ -22,7 +22,6 @@ func (f *SourceFile) Exists() bool {
 	}
 	return true
 }
-
 func (f *SourceFile) IsDir() bool {
 	fi, err := os.Stat(f.Path)
 	if err != nil {
@@ -30,7 +29,6 @@ func (f *SourceFile) IsDir() bool {
 	}
 	return fi.IsDir()
 }
-
 func (f *SourceFile) IsDotNet() bool {
 	name := strings.ToLower(f.Path)
 	for _, extension := range extensions {

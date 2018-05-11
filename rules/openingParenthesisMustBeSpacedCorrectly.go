@@ -1,6 +1,8 @@
 package rules
 
-import "regexp"
+import (
+	"regexp"
+)
 
 var openingParenthesisMustBeSpacedCorrectly = &Rule{
 	Name:        "Opening parenthesis must be spaced correctly",

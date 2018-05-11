@@ -1,6 +1,8 @@
 package rules
 
-import "regexp"
+import (
+	"regexp"
+)
 
 var tabsMustNotBeUsed = &Rule{
 	Name:        "Tabs must not be used",

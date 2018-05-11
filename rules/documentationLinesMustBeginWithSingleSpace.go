@@ -1,6 +1,8 @@
 package rules
 
-import "regexp"
+import (
+	"regexp"
+)
 
 var documentationLinesMustBeginWithSingleSpace = &Rule{
 	Name:        "Documentation lines must begin with a single space",

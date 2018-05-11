@@ -6,47 +6,61 @@ import (
 )
 
 func TestUsingDirectivesMustBeOrderedAlphabeticallyByNamespace(t *testing.T) {
-	input := []byte(`using Company;
-using CompanyB.System;
-using Company.Collections.Generic;
-using Company.Linq;
-
-namespace Company.Blah {}
-using (var something = new Something()) {}`)
-	expected := []byte(`using Company;
-using Company.Collections.Generic;
-using Company.Linq;
-using CompanyB.System;
-
-namespace Company.Blah {}
-using (var something = new Something()) {}`)
-
-	actual := applyUsingDirectivesMustBeOrderedAlphabeticallyByNamespace(input)
-	if !bytes.Equal(expected, actual) {
-		t.Fail()
+	tests := []struct {
+		description string
+		given       []byte
+		expected    []byte
+	}{
+		{
+			description: "sort alphabetically",
+			given: []byte(
+				"using System;\n" +
+					"using System.Collections.Generic;\n" +
+					"using System.Linq;\n" +
+					"using System.Web.Services;\n" +
+					"using System.Web.UI;\n" +
+					"using Use.This.Example.Concrete;\n" +
+					"using Use.This.Example.Extensions;\n" +
+					"\n" +
+					"namespace Company.Blah {}"),
+			expected: []byte(
+				"using System;\n" +
+					"using System.Collections.Generic;\n" +
+					"using System.Linq;\n" +
+					"using System.Web.Services;\n" +
+					"using System.Web.UI;\n" +
+					"using Use.This.Example.Concrete;\n" +
+					"using Use.This.Example.Extensions;\n" +
+					"\n" +
+					"namespace Company.Blah {}"),
+		},
+		{
+			description: "ignore using blocks",
+			given: []byte(
+				"using Company;\n" +
+					"using CompanyB.System;\n" +
+					"using Company.Collections.Generic;\n" +
+					"using Company.Linq;\n" +
+					"\n" +
+					"namespace Company.Blah {}\n" +
+					"using (var something = new Something()) {}"),
+			expected: []byte(
+				"using Company;\n" +
+					"using Company.Collections.Generic;\n" +
+					"using Company.Linq;\n" +
+					"using CompanyB.System;\n" +
+					"\n" +
+					"namespace Company.Blah {}\n" +
+					"using (var something = new Something()) {}"),
+		},
 	}
 
-	input = []byte(`using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Services;
-using System.Web.UI;
-using Usar.Eks.ProjDoc.Concrete;
-using Usar.Eks.ProjDoc.Extensions;
-
-namespace Company.Blah {}`)
-	expected = []byte(`using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Services;
-using System.Web.UI;
-using Usar.Eks.ProjDoc.Concrete;
-using Usar.Eks.ProjDoc.Extensions;
-
-namespace Company.Blah {}`)
-
-	actual = applyUsingDirectivesMustBeOrderedAlphabeticallyByNamespace(input)
-	if !bytes.Equal(expected, actual) {
-		t.Fail()
+	for _, test := range tests {
+		t.Run(test.description, func(t *testing.T) {
+			actual := applyUsingDirectivesMustBeOrderedAlphabeticallyByNamespace(test.given)
+			if !bytes.Equal(test.expected, actual) {
+				t.Errorf("Got `%s` but wanted `%s`", string(actual), string(test.expected))
+			}
+		})
 	}
 }

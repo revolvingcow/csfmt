@@ -1,6 +1,8 @@
 package rules
 
-import "regexp"
+import (
+	"regexp"
+)
 
 var codeMustNotContainMultipleBlankLinesInARow = &Rule{
 	Name:        "Code must not contain multiple blank lines in a row",
